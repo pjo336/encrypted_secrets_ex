@@ -76,6 +76,25 @@ defmodule EncryptedSecrets do
     end
   end
 
+  def decrypt() do
+    key = File.read!(@key_file_location)
+    secrets_path = @secrets_file_location
+    { :ok, tmp_filepath } = ReadSecrets.read_into_file(key, secrets_path)
+    IO.puts("Decrypted to: #{List.last(String.split(tmp_filepath, "/"))}")
+    IO.puts "DON'T FORGET TO DELETE THIS FILE BEFORE COMMITTING"
+  end
+
+  def encrypt(tmp_file) do
+    key = File.read!(@key_file_location)
+    secrets_path = @secrets_file_location
+    tmp_filepath = @base_directory <> "/#{String.trim(tmp_file)}"
+    {:ok, _path} = WriteSecrets.write_file(key, tmp_filepath, secrets_path)
+    File.rm(tmp_filepath)
+    IO.puts("*************")
+    IO.puts("Secrets saved")
+    IO.puts("*************")
+  end
+
   @doc """
     Decrypts and parses secrets file, returning it as a map
 
